@@ -240,7 +240,7 @@ impl<C> CmdArg<C> {
                     })
                 }
                 Some(b"XREAD") | Some(b"XREADGROUP") => {
-                    let pos = position(cmd, b"STREAMR")?;
+                    let pos = position(cmd, b"STREAMS")?;
                     get_cmd_arg(cmd, pos + 1).map(slot_for_key)
                 }
                 Some(b"SCRIPT") => {
