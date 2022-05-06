@@ -252,10 +252,7 @@ impl<C> CmdArg<C> {
             }
         }
         match self {
-            Self::Cmd { cmd, .. } => {
-                let out = slot_for_command(cmd);
-                out
-            }
+            Self::Cmd { cmd, .. } => slot_for_command(cmd),
             Self::Pipeline { pipeline, .. } => {
                 let mut iter = pipeline.cmd_iter();
                 let slot = iter.next().map(slot_for_command)?;
