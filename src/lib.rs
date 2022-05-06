@@ -239,10 +239,7 @@ impl<C> CmdArg<C> {
                         })
                     })
                 }
-                Some(b"XGROUP") => get_cmd_arg(cmd, 2).map(|key| {
-                    println!("KEY: {:?}", std::str::from_utf8(key));
-                    slot_for_key(key)
-                }),
+                Some(b"XGROUP") => get_cmd_arg(cmd, 2).map(|key| slot_for_key(key)),
                 Some(b"XREAD") | Some(b"XREADGROUP") => {
                     let pos = position(cmd, b"STREAMS")?;
                     get_cmd_arg(cmd, pos + 1).map(slot_for_key)
@@ -257,7 +254,6 @@ impl<C> CmdArg<C> {
         match self {
             Self::Cmd { cmd, .. } => {
                 let out = slot_for_command(cmd);
-                println!("{:?}", out);
                 out
             }
             Self::Pipeline { pipeline, .. } => {
@@ -604,7 +600,6 @@ where
     fn get_connection(&mut self, slot: u16) -> (String, ConnectionFuture<C>) {
         if let Some((_, addr)) = self.slots.range(&slot..).next() {
             if let Some(conn) = self.connections.get(addr) {
-                println!("ADDR: {:?}", addr);
                 return (addr.clone(), conn.clone());
             }
 
@@ -643,7 +638,6 @@ where
             self.get_connection(info.slot.unwrap())
         };
         async move {
-            println!("{:?} -- {:?}", conn, addr);
             let conn = conn.await;
             let result = cmd.exec(conn).await;
             (addr, result)
@@ -1130,8 +1124,6 @@ where
                         } else {
                             return None;
                         };
-
-                        println!("{}:{}", ip, port);
 
                         match &password {
                             Some(pw) => Some(format!("redis://:{}@{}:{}", pw, ip, port)),
